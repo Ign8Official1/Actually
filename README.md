@@ -2,7 +2,7 @@
 
 Actually... is an evidence-native research agent for the claims people make too confidently at work. Paste a memo, Slack dump, or AI answer and it turns the fog into a short brief: claim → evidence → grade → next check.
 
-The demo ships with three replay fixtures so a judge can try the complete flow without an API key or fragile live search:
+The app includes three starter scenarios, and it can investigate any claim with an OpenAI API key and live web search:
 
 - **Should we migrate payments to Stripe?** — a mixed internal memo.
 - **Fact-check this AI strategy answer** — four overconfident claims.
@@ -17,9 +17,9 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`, choose a scenario, and click **Grade these claims**. The replay pipeline shows claim extraction, parallel research, evidence reduction, grading, and brief synthesis with realistic timing. Copy markdown and re-check contested claims are included in the results experience.
+Open `http://localhost:3000`, paste a claim, memo, Slack thread, or AI answer, choose a research lens, and click **Start investigation**. The pipeline shows claim extraction, live web research, evidence reduction, grading, and brief synthesis. Copy markdown and re-check contested claims are included in the results experience.
 
-For live wiring, copy `.env.example` to `.env.local`, set `OPENAI_API_KEY`, and use `OPENAI_MODEL=gpt-5.6`. The API seam is `POST /api/analyze` followed by `GET /api/runs/:runId`; the fixture path is intentionally deterministic for demo day.
+For live analysis, copy `.env.example` to `.env.local`, set `OPENAI_API_KEY`, and optionally change `OPENAI_MODEL`. The server calls the Responses API with web search enabled, so the key never reaches the browser. `POST /api/analyze` returns the complete typed investigation result.
 
 ## Architecture
 
@@ -35,7 +35,7 @@ flowchart LR
   E --> F[Brief + evidence map]
 ```
 
-GPT-5.6 is the intended runtime model. In the full live pipeline, the four investigators fan out per important claim; Programmatic Tool Calling owns the bounded reduction step (dedupe, filter, join, rank) before the grading model sees compact evidence packs. This starter keeps that contract visible while using cached evidence for a reliable MVP demo.
+The live pipeline asks the model to extract claims, search for current evidence, distinguish support from contradiction, grade uncertainty, and return source links. The UI still includes starter scenarios so the product is easy to explore before adding a key.
 
 ## Codex + build notes
 
